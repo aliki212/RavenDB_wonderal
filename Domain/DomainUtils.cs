@@ -14,7 +14,7 @@ namespace RavenDB_wonderal.Domain
             var pawns = new List<Pawn>();
             for (int i=0; i<= numberOfPawns; i++)
             {
-                var p = GeneratePawn(i + 1);
+                var p = GeneratePawn(i +201);
                 UpdatePawnProperties(p);
                 pawns.Add(p);
             }
