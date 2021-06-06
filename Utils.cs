@@ -18,28 +18,27 @@ namespace RavenDB_wonderal
             {
                 int.TryParse(Common.ShowMenu(), out selection);
 
-                if (selection == 1)
+                if (selection == 1) // initialize all
                 {
                     InitializeSampleData(store);
                 }
-                if (selection == 2)
+                if (selection == 2) // search text
                 {
                     SearchPawns(store);
-                }
-                
-                if (selection == 3)
+                }          
+                if (selection == 3) // search email
                 {
-                    
+                    GetAProduct(store);
                 }
-                if (selection == 4)
+                if (selection == 4) // update
                 {
-
+                    UpdateAPawn(store);
                 }
-                if (selection == 5)
+                if (selection == 5) // delete 1
                 {
                     DeleteAPawn(store);
                 }
-                if (selection == 6)
+                if (selection == 6) // delete all
                 {
                     DeleteAllPawns(store);
                 }
@@ -70,17 +69,70 @@ namespace RavenDB_wonderal
 
             using (var session = store.OpenSession())
             {
-                pawns = session.Query<Pawn>().ToList();
-                
+                var query = session.Query<Pawn>();
+                if (inputText == null)
+                pawns = query.ToList();
+                else
+                {
+
+                }
             }
             Console.WriteLine(@"Results of the search: {0} items", pawns.Count());
             foreach(Pawn pawn in pawns)
             {
                 Console.WriteLine(@"Id: {0} \tName:{1} \tEmail:{2} \tBiography:{3}", pawn.Id, pawn.Name, pawn.Email, pawn.Biography);
-                //Console.WriteLine($"Id: " + pawn.Id + " \tName:{1} " + pawn.Name + "  \tEmail:{2} " + pawn.Email + " \tBiography:{3}" + pawn.Biography);//+ ", pawn.Id, pawn.Name, pawn.Email, pawn.Biography);
-
             }
+        }
 
+        public static void GetAProduct(IDocumentStore store)
+        {
+            Console.WriteLine("---" + Environment.NewLine + "Enter the Pawn Id to delete");
+            var inputText = Console.ReadLine().Trim();
+            Pawn pTemp = new Pawn();
+
+            using (var session = store.OpenSession())
+            {
+                pTemp = session.Query<Pawn>().Where(p => p.Id == inputText).FirstOrDefault();
+                session.SaveChanges();
+            }
+            Console.WriteLine(@"Id: {0} \tName:{1} \tEmail:{2} \tBiography:{3}", pTemp.Id, pTemp.Name, pTemp.Email, pTemp.Biography);
+        }
+
+
+        public static void UpdateAPawn(IDocumentStore store)
+        {
+            Console.WriteLine("---" + Environment.NewLine + "Enter the Pawn Id to edit");
+            var inputTextId = Console.ReadLine().Trim();
+            Pawn pTemp = new Pawn();
+            using (var session = store.OpenSession())
+            {
+                pTemp = session.Query<Pawn>().Where(p => p.Id == inputTextId).FirstOrDefault();
+
+                //session.SaveChanges();
+            }
+            Console.WriteLine(@"Details for Pawn deleted Pawn \Id: { 0} \tName: { 1} \tEmail: { 2} \tBiography: { 3}
+            ", pTemp.Id, pTemp.Name, pTemp.Email, pTemp.Biography);
+
+            string inputEditChoice = Common.ShowMenuEdit();
+            int selection = 0;
+            do
+            {
+                int.TryParse(Common.ShowMenu(), out selection);
+
+                if (selection == 1) // initialize all
+                {
+                    // ChangeName();
+                }
+                if (selection == 2) // search
+                {
+                    // ChangeEmail();
+                }
+
+                if (selection == 3) // get 1
+                {
+                    // ChangeBiography();
+                }
+            } while (selection > 0);
         }
 
         public static void DeleteAPawn(IDocumentStore store)
