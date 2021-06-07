@@ -48,6 +48,7 @@ namespace RavenDB_wonderal
 
         public static void InitializeSampleData(IDocumentStore store)
         {
+            
             var pawns = DomainUtils.BuildSamplePawns(10);
             using (var session = store.OpenSession())
             {
@@ -171,16 +172,16 @@ namespace RavenDB_wonderal
         {
             Console.WriteLine("-- -" + Environment.NewLine + "Enter the Pawn Id to delete");
             var inputText = Console.ReadLine().Trim();
-            Pawn pawnTemp = new Pawn();
+            Pawn pawn = new Pawn();
             
             using (var session = store.OpenSession())
             {
-                pawnTemp = session.Query<Pawn>().Where(p => p.Id == inputText).FirstOrDefault();
-                session.Delete(pawnTemp.Id);
+                pawn = session.Query<Pawn>().Where(p => p.Id == inputText).FirstOrDefault();
+                session.Delete(pawn);
                 
                 session.SaveChanges();
             }
-            Console.WriteLine(@"Successfully deleted Pawn with Name : {0} ", pawnTemp.Name);
+            Console.WriteLine(@"Successfully deleted Pawn with Name : {0} ", pawn.Name);
         }
 
         public static void DeleteAllPawns(IDocumentStore store)
@@ -192,9 +193,9 @@ namespace RavenDB_wonderal
                 pawns = session.Query<Pawn>().ToList();
                 count = pawns.Count();
 
-                foreach (var p in pawns)
+                foreach (var pawn in pawns)
                 {
-                    session.Delete(p.Id);
+                    session.Delete(pawn);
                 }
                 session.SaveChanges();
             }

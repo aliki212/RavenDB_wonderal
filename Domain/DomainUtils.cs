@@ -23,14 +23,50 @@ namespace RavenDB_wonderal.Domain
 
         public static Pawn GeneratePawn(int id)
         {
-            return new Pawn()
-            {
-                Id = id.ToString(),
-                Name = Lorem.Sentence(3),
-                Email = Lorem.GetFirstWord(),
-                Biography = Lorem.Paragraph(3)
-            };
+            Pawn newPawn = new Pawn();
+            
+                newPawn.Id = id.ToString();
+                newPawn.Name = Faker.Name.FullName(NameFormats.WithPrefix);
+                newPawn.Email = Faker.Internet.Email(newPawn.Name);
+                newPawn.Biography = Lorem.Paragraph(1);
+                return newPawn;
         }
+        
+
+        //public static Pawn GeneratePawn(int id)
+        //{
+        //    XmlDocument xmlDocument = new XmlDocument();
+        //    FileStream lfile = new FileStream(@"C:\TTemp\Backstories_REBAdult_Basic.xml", FileMode.Open);
+        //    Pawn newPawn = new Pawn();
+
+        //    //var number = RandomNumber.Next(0, 100);
+
+        //    //if (number % 2 == 0) //chance of male or female
+        //    //{
+        //    //    newPawn.Gender = "male";
+        //    //    lfile = new FileStream("C:\\TTemp\\MeleBio.xml", FileMode.Open);
+        //    //}
+        //    //else
+        //    //{
+        //    //    newPawn.Gender = "female";
+        //    //    lfile = new FileStream("C:\\TTemp\\FemaleBio.xml", FileMode.Open);
+        //    //}
+
+        //    xmlDocument.Load(lfile);
+        //    string bio = "";
+        //    XmlNodeList list = xmlDocument.GetElementsByTagName("baseDesc");
+        //    var number = RandomNumber.Next(0, list.Count);
+
+        //    XmlElement chosenBio = (XmlElement)xmlDocument.GetElementsByTagName("baseDesc")[number];
+
+        //    bio = chosenBio.InnerText;
+        //    newPawn.Id = id.ToString();
+        //    newPawn.Name = Faker.Name.FullName(NameFormats.WithPrefix);
+        //    newPawn.Email = Faker.Internet.Email(newPawn.Name);
+        //    newPawn.Biography = bio;
+        //    return newPawn;
+        //}
+
 
         public static void UpdatePawnProperties(Pawn pawn)
         {
