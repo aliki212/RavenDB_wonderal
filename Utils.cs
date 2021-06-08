@@ -1,6 +1,7 @@
 ﻿using Raven.Client.Documents;
 using Raven.Client.Documents.Operations;
 using RavenDB_wonderal.Domain;
+using Spectre.Console;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,10 +31,9 @@ namespace RavenDB_wonderal
                 {
                     SearchEmailPawn(store);
                 }
-                if (selection == 4) // update
+                if (selection == 4) // get 1
                 {
                     GetAPawn(store);
-                    //UpdateAPawn(store);
                 }
                 if (selection == 5) // delete 1
                 {
@@ -48,8 +48,17 @@ namespace RavenDB_wonderal
 
         public static void InitializeSampleData(IDocumentStore store)
         {
-            
-            var pawns = DomainUtils.BuildSamplePawns(10);
+            int pawnsToGenerate = 0;
+            Console.WriteLine("---" + Environment.NewLine + "Enter how many pawns you want to generate:" );
+            Console.WriteLine("---" + Environment.NewLine + "Default is 100") ;
+            var inputText =  Console.ReadLine().Trim();
+            if (inputText == null)
+                pawnsToGenerate = 100;
+            else
+            {
+                pawnsToGenerate = Convert.ToInt32(inputText);
+            }
+            var pawns = DomainUtils.BuildSamplePawns(pawnsToGenerate);
             using (var session = store.OpenSession())
             {
                 foreach(Pawn pawn in pawns)
@@ -84,6 +93,8 @@ namespace RavenDB_wonderal
                     .ToList();
                 }
             }
+            Common.ViewPawnTable(pawns);
+
             Console.WriteLine(@"Results of the search: {0} items", pawns.Count());
             foreach(Pawn pawn in pawns)
             {
@@ -114,6 +125,7 @@ namespace RavenDB_wonderal
             if (pawns.Count() > 0)
             {
                 Console.WriteLine(@"Results of the search: {0} items", pawns.Count());
+                Common.ViewPawnTable(pawns);
                 foreach (Pawn pawn in pawns)
                 {
                     Console.WriteLine($"Id: {pawn.Id} \tName:{pawn.Name} \tEmail:{pawn.Email} \nBiography:{pawn.Biography}");
@@ -135,38 +147,6 @@ namespace RavenDB_wonderal
             Console.WriteLine($"Id: {pawnTemp.Id} \tName:{pawnTemp.Name} \tEmail:{pawnTemp.Email} \nBiography:{pawnTemp.Biography}");
         }
 
-
-        public static void UpdateAPawn(IDocumentStore store)
-        {
-            Console.WriteLine("---" + Environment.NewLine + "Enter the Pawn Id to update");
-            var inputTextId = Console.ReadLine().Trim();
-            Pawn pawnTemp = new Pawn();
-            using (var session = store.OpenSession())
-            {
-                pawnTemp = session.Query<Pawn>().Where(p => p.Id == inputTextId).FirstOrDefault();
-            }
-            Console.WriteLine($"Details for Pawn deleted Pawn Id: {pawnTemp.Id} \tName:{pawnTemp.Name} \tEmail:{pawnTemp.Email} \nBiography:{pawnTemp.Biography}");
-
-            string inputEditChoice = Common.ShowMenuEdit();
-            int selection = 0;
-            do
-            {
-                int.TryParse(Common.ShowMenu(), out selection);
-
-                if (selection == 1) // initialize all
-                {
-                    // ChangeName();
-                }
-                if (selection == 2) // search
-                {
-                    // ChangeEmail();
-                }
-                if (selection == 3) // get 1
-                {
-                    // ChangeBiography();
-                }
-            } while (selection > 0);
-        }
 
         public static void DeleteAPawn(IDocumentStore store)
         {
@@ -200,6 +180,39 @@ namespace RavenDB_wonderal
                 session.SaveChanges();
             }
             Console.WriteLine(@"Deleted {0} items", count);
+        }
+
+        // was not used
+        public static void UpdateAPawn(IDocumentStore store)
+        {
+            Console.WriteLine("---" + Environment.NewLine + "Enter the Pawn Id to update");
+            var inputTextId = Console.ReadLine().Trim();
+            Pawn pawnTemp = new Pawn();
+            using (var session = store.OpenSession())
+            {
+                pawnTemp = session.Query<Pawn>().Where(p => p.Id == inputTextId).FirstOrDefault();
+            }
+            Console.WriteLine($"Details for Pawn deleted Pawn Id: {pawnTemp.Id} \tName:{pawnTemp.Name} \tEmail:{pawnTemp.Email} \nBiography:{pawnTemp.Biography}");
+
+            string inputEditChoice = Common.ShowMenuEdit();
+            int selection = 0;
+            do
+            {
+                int.TryParse(Common.ShowMenu(), out selection);
+
+                if (selection == 1) // initialize all
+                {
+                    // ChangeName();
+                }
+                if (selection == 2) // search
+                {
+                    // ChangeEmail();
+                }
+                if (selection == 3) // get 1
+                {
+                    // ChangeBiography();
+                }
+            } while (selection > 0);
         }
     }
 }
