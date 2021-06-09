@@ -7,7 +7,11 @@ Anyhow - ofc I wanted the far left  - security first!
 <img src="https://ravendb.net/RavenFS/GetDocImage?v=4.2&lang=All&key=start/installation/setup-wizard&fileName=setup-wizard-1.png" width="300" >
 
 But at this step I entered 127.0.0.1 with a warning that this This node won't be reachable from outside this machine. Found different information about it [(origins of dev site here)](https://issues.hibernatingrhinos.com/issue/RavenDB-12559) but I continued and then on the restart of the site step the error was that the 127.0.0.1 ip was already taken. Eventualy I did it again and again and it worked.
-I still dont get what is the IP we need to enter - [this tutorial](https://www.techrepublic.com/article/how-to-install-the-ravendb-nosql-database-on-ubuntu-20-04/) & [youtube](https://www.youtube.com/watch?v=tMUIpi2VKJI) states  "ServerUrl": "http://SERVER_IP:8080",  Where SERVER_IP is the IP address of your hosting server. I think it is a port forward which I have tried for torrents but did not succeed with it.
+I still dont get what is the IP we need to enter - [this tutorial](https://www.techrepublic.com/article/how-to-install-the-ravendb-nosql-database-on-ubuntu-20-04/) & [youtube](https://www.youtube.com/watch?v=tMUIpi2VKJI) states  
+
+"ServerUrl": "http://SERVER_IP:8080",  Where SERVER_IP is the IP address of your hosting server. I think it is a port forward which I have tried for torrents but did not succeed with it.
+
+
 Going through the [founder's article](https://ayende.com/blog/180802/ravendb-setup-how-the-automatic-setup-works) on the new and improved automatic setup - it was updated June 2020 but its code is from 2012...
 > we need to provide proof to Let’s Encrypt that we own the hostname in question. 
 > During setup, the user will register a subdomain under that, such as arava.dbs.local.ravendb.net. We ensure that only a single user can claim each domain. Once they have done that, they let RavenDB what IP address they want to run on. This can be a public IP, exposed on the internet, a private one (such as 192.168.0.28) or even a loopback device (127.0.0.1).
@@ -41,19 +45,30 @@ Looks like they replaced all wildcards and escapequery for [Lucene](https://rave
 Apache Lucene is a free and open-source search engine software library, originally written completely in Java.
 The core of every index is its mapping function that utilizes LINQ-like syntax, and the result of such a mapping is converted to a The core of every index is its mapping function that utilizes LINQ-like syntax, and the result of such a mapping is converted to a Lucene index entry which is persisted for future use to avoid re-indexing each time the query is issued and keep response times minimal.
 [Working with Indexes](https://ravendb.net/learn/inside-ravendb-book/reader/4.0/12-working-with-indexes]   - there is a book <3 0 chapter 12 working with indexes
-pawns = session
-                   `.Query<Pawn>().Where(x =>x.Email.Contains(inputText))`
-                  ` //.Search(x => x.Email, inputText ) //Search does not work`
+                                                                                                                                
+                                                                                                                                
+`pawns = session
+                                                                                                                                
+                   .Query<Pawn>().Where(x =>x.Email.Contains(inputText))
+  
+                  .Search(x => x.Email, inputText ) //Search does not work for *any* string - only for full email`
+  
+  
 NotSupportedException: Contains is not supported, doing a substring match over a text field is a very slow operation, and is not allowed using the Linq API.
 The recommended method is to use full text search (mark the field as Analyzed and use the Search() method to query it.
 [Article Link](https://ravendb.net/docs/article-page/2.5/csharp/client-api/querying/static-indexes/configuring-index-options): You need to Define an Index and change the field as analyzed for ti to work > then Search will work
 DatabaseCommands cannot be found as a class from store.DatabaseCommands  > [article](https://ravendb.net/docs/article-page/4.2/csharp/migration/client-api/commands) it has been removed in 4.2 > found article in [stackoverflow](https://stackoverflow.com/questions/19656130/linq-value-contains-function-error) where the documentation is un-understandable , refers to >Operations : [How to Start an Index](https://ravendb.net/docs/article-page/4.2/csharp/client-api/operations/maintenance/indexes/start-index)
 store.Maintenance.Send(new StartIndexOperation("Orders/Totals"));  
 
-`pawns = session.Query<Pawns_Search.Result, Pawns_Search>() <-Result cannot be found in that scope`
-                    `//     .Where(p => p.Query == inputText)`
-                    `//     .OfType<Pawn>()`
-                    `//     .ToList();`
+`pawns = session.Query<Pawns_Search.Result, Pawns_Search>() //<-Result cannot be found in that scope
+                                                                     
+                    //     .Where(p => p.Query == inputText)
+  
+                    //     .OfType<Pawn>()
+  
+                    //     .ToList();`
+
+  
 Found a solution but usin s.Adbanced.LuceneQuery<Item, WhateverYouCalledThatIndex>()  
 Found how [to use In](https://stackoverflow.com/questions/7899936/ravendb-how-to-query-with-multiple-search-terms#answer-7902851)
 
@@ -65,7 +80,7 @@ Resource[] FindResourcesByEmployees(string[] employeeIds)
         .ToArray();
 }`
 
-> Discovered that Result was a created class within the Search - but 
-errorRaven.Client.Exceptions.RavenException: 'System.ArgumentException: The field 'Query' is not indexed, cannot query/sort on fields that are not indexed
+ Discovered that Result was a created class within the Search - but 
+> errorRaven.Client.Exceptions.RavenException: 'System.ArgumentException: The field 'Query' is not indexed, cannot query/sort on fields that are not indexed
    at Raven.Server.Documents.Indexes.Index.ThrowInvalidField(String f) in C:\Builds\RavenDB-Stable-5.1\51027\src\Raven.Server
 Th search works for full email search - more research needed for any string search as RavenDb is tricky on that one :dancers:
