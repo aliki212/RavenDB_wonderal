@@ -1,5 +1,7 @@
 ﻿using Raven.Client.Documents;
+using Raven.Client.Documents.Indexes;
 using Raven.Client.Documents.Session;
+using RavenDB_wonderal.Index;
 using Spectre.Console;
 using System;
 using System.Collections.Generic;
@@ -16,30 +18,21 @@ namespace RavenDB_wonderal
 
         private static IDocumentStore CreateDocumentStore()
         { return new DocumentStore
-        {
-            Urls = new[] { "https://a.wonderal.ravendb.community/" },
-            Database = "Pawns",
-            Certificate = clientCertificate,
-            Conventions = { }
-        }.Initialize();
+            {
+                Urls = new[] { "https://a.wonderal.ravendb.community/" },
+                Database = "Pawns",
+                Certificate = clientCertificate,
+                Conventions = { }
+            }.Initialize();
         }
 
         static void Main(string[] args)
         {
             using (var store = CreateDocumentStore())
             {
-                //var table = new Table();
+                IndexCreation.CreateIndexes(typeof(Pawns_Search).Assembly, store);
+                IndexCreation.CreateIndexes(typeof(Pawn_Seach_All).Assembly, store); ;
 
-                //// Add some columns
-                //table.AddColumn("Foo");
-                //table.AddColumn(new TableColumn("Bar").Centered());
-
-                //// Add some rows
-                //table.AddRow("Baz", "[green]Qux[/]");
-                //table.AddRow(new Markup("[blue]Corgi[/]"), new Panel("Waldo"));
-
-                //// Render the table to the console
-                //AnsiConsole.Render(table);
                 Utils.StartDemo(store);
             }
         }
