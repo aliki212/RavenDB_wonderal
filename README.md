@@ -56,7 +56,7 @@ store.Maintenance.Send(new StartIndexOperation("Orders/Totals"));
                     `//     .ToList();`
 Found a solution but usin s.Adbanced.LuceneQuery<Item, WhateverYouCalledThatIndex>()  
 Found how [to use In](https://stackoverflow.com/questions/7899936/ravendb-how-to-query-with-multiple-search-terms#answer-7902851)
---
+
 `using Raven.Client.Linq;
 Resource[] FindResourcesByEmployees(string[] employeeIds)
 {
